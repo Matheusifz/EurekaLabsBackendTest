@@ -16,10 +16,11 @@ router.get("/api/address", async (req, res) => {
 
 router.post("/api/address", async (req, res) => {
   try {
-    const { state, neighborhood, city, street, ibge, gia, ddd, adjunct } =
+    const { cep ,state, neighborhood, city, street, ibge, gia, ddd, adjunct } =
       req.body;
 
     const newAddress: IAddress = {
+      cep,
       state,
       neighborhood,
       city,

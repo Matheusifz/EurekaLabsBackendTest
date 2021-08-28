@@ -1,6 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 const AddressSchema = new Schema({
+  cep: {
+    type: String,
+    required: true,
+  },
   state: {
     type: String,
     required: true,

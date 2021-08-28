@@ -1,4 +1,5 @@
 export interface IAddress {
+  cep: string;
   state: string;
   neighborhood: string;
   city: string;
