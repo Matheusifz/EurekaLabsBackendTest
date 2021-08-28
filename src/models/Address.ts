@@ -4,6 +4,7 @@ const AddressSchema = new Schema({
   cep: {
     type: String,
     required: true,
+    unique: true,
   },
   state: {
     type: String,
