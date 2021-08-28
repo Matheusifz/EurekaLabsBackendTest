@@ -28,7 +28,7 @@ const AddressSchema = new Schema({
   },
   gia: {
     type: String,
-    required: true,
+    required: false,
   },
   ddd: {
     type: String,

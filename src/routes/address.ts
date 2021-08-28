@@ -29,16 +29,16 @@ router.get("/api/address", async (req, res) => {
 
     searchedCep = [searchedCep.slice(0, 5), "-", searchedCep.slice(5)].join("");
 
-    const addresses = await Address.find({ cep: searchedCep });
+    const address = await Address.find({ cep: searchedCep });
 
-    if (addresses.length > 0) {
-      return res.status(200).json({ addresses });
+    if (address.length > 0) {
+      return res.status(200).json({ address: address[0] });
     } else {
       const address = await axios
         .get<PTAddress>(`https://viacep.com.br/ws/${searchedCep}/json/`)
         .then((response) => response.data);
 
-      if (!addresses) {
+      if (!address) {
         return res.status(200).json({ message: "Sorry, cep not found" });
       } else {
         const { cep, ibge, gia, ddd } = address;
