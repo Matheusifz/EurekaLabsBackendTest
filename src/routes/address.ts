@@ -1,46 +1,41 @@
 import express from "express";
-import { IAddress } from "../interfaces/address";
+import axios from "axios";
+import { IAddress, PTAddress } from "../interfaces/address";
 import Address from "../models/Address";
 
 const router = express.Router();
 
 router.get("/api/address", async (req, res) => {
   try {
-    const addresses = await Address.find({ cep: req.query.cep });
-    return res.status(200).json({ addresses });
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json("Sorry, server error...");
-  }
-});
+    const searchedCep = req.query.cep;
+    const addresses = await Address.find({ cep: searchedCep });
 
-router.post("/api/address", async (req, res) => {
-  try {
-    const { cep, state, neighborhood, city, street, ibge, gia, ddd, adjunct } =
-      req.body;
-
-    const newAddress: IAddress = {
-      cep,
-      state,
-      neighborhood,
-      city,
-      street,
-      ibge,
-      gia,
-      ddd,
-      adjunct,
-    };
-
-    const foundAddress = await Address.find({ cep });
-
-    if (foundAddress) { 
-      return res.status(200).json({ address: foundAddress });
+    if (addresses.length > 0) {
+      return res.status(200).json({ addresses });
     } else {
-      const address = new Address(newAddress);
+      const address = await axios
+        .get<PTAddress>(`https://viacep.com.br/ws/${searchedCep}/json/`)
+        .then((response) => response.data);
 
-      const createdAddress = await address.save();
+      if (!addresses) {
+        return res.status(200).json({ message: "Sorry, cep not found" });
+      } else {
+        const { cep, ibge, gia, ddd } = address;
+        const newAddress: IAddress = {
+          cep,
+          state: address.uf,
+          neighborhood: address.bairro,
+          city: address.localidade,
+          street: address.logradouro,
+          ibge,
+          gia,
+          ddd,
+          adjunct: address.complemento,
+        };
 
-      return res.status(200).json({ address: createdAddress });
+        const createdAddress = new Address(newAddress);
+        return res.status(200).json({ address: await createdAddress.save() });
+      }
     }
   } catch (error) {
     console.log(error);
