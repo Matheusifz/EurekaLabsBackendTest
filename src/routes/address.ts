@@ -7,7 +7,28 @@ const router = express.Router();
 
 router.get("/api/address", async (req, res) => {
   try {
-    const searchedCep = req.query.cep;
+    let searchedCep = req.query.cep;
+
+    if (!searchedCep) {
+      return res.status(200).json({ message: "You need to provide a cep." });
+    }
+
+    searchedCep = String(searchedCep);
+
+    searchedCep = searchedCep.replace(/\D/g, "");
+
+    const cepIsValidNum = /^\d+$/.test(String(searchedCep));
+
+    if (!cepIsValidNum) {
+      return res.status(200).json({ message: "You need to provide a cep." });
+    }
+
+    if (searchedCep.length !== 8) {
+      return res.status(200).json({ message: "You need to provide a cep." });
+    }
+
+    searchedCep = [searchedCep.slice(0, 5), "-", searchedCep.slice(5)].join("");
+
     const addresses = await Address.find({ cep: searchedCep });
 
     if (addresses.length > 0) {
