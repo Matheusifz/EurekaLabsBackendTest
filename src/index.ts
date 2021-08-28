@@ -2,16 +2,24 @@ import express from "express";
 import { json } from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
+import dotenv from "dotenv";
 import { addressRouter } from "./routes/address";
 
 const app = express();
 app.use(json());
 app.use(cors());
 app.use(addressRouter);
+dotenv.config()
+
+
+const user = process.env.MONGODB_USER;
+const password = process.env.MONGODB_PASSWORD;
+
+
 
 mongoose
   .connect(
-    "mongodb+srv://matheusifz:sabrina07@cluster0.iezls.mongodb.net/CEP?retryWrites=true&w=majority",
+    `mongodb+srv://${user}:${password}@cluster0.iezls.mongodb.net/CEP?retryWrites=true&w=majority`,
     {}
   )
   .then(() => {
