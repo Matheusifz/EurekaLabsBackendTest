@@ -4,8 +4,14 @@ import Address from "../models/Address";
 
 const router = express.Router();
 
-router.get("/api/address", (req, res) => {
-  return res.send("Get the address");
+router.get("/api/address", async (req, res) => {
+  try {
+    const addresses = await Address.find();
+    return res.status(200).json({ addresses });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json('Sorry, server error...');
+  }
 });
 
 router.post("/api/address", async (req, res) => {
